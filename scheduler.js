@@ -1,21 +1,23 @@
 import cron from "node-cron";
 import { DEFAULT_SCHEDULE, DEFAULT_GLASS } from "./config.js";
-import { getUser, addWater } from "./database.js";
+import { getAllUsers, addWater } from "./database.js";
 
 export function initScheduler(sock) {
   DEFAULT_SCHEDULE.forEach(time => {
-    const [h,m] = time.split(":");
+    const [h, m] = time.split(":");
     cron.schedule(`${m} ${h} * * *`, async () => {
-      const users = [getUser("demo@demo")]; // TODO: ambil semua user aktif dari DB
+      const users = await getAllUsers();
       for (let u of users) {
-        if (!u) continue;
-        await sock.sendMessage(u.jid, { text: `💧 Saatnya minum ${DEFAULT_GLASS}ml air putih!` });
-        addWater(u.jid, DEFAULT_GLASS, "reminder");
+        await sock.sendMessage(u.user_id, { text: `💧 Saatnya minum ${DEFAULT_GLASS}ml air putih!` });
+        await addWater(u.user_id, DEFAULT_GLASS, "reminder");
       }
     }, { timezone: "Asia/Jakarta" });
   });
 
   cron.schedule("0 22 * * *", async () => {
-    await sock.sendMessage("demo@demo", { text: "📊 Laporan harian dikirim (demo)." });
+    const users = await getAllUsers();
+    for (let u of users) {
+      await sock.sendMessage(u.user_id, { text: "📊 Laporan harian siap (fitur masih demo)." });
+    }
   }, { timezone: "Asia/Jakarta" });
 }
