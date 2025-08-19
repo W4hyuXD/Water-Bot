@@ -12,8 +12,10 @@ async function start() {
     printQRInTerminal: true,
     logger: pino({ level: "silent" })
   });
-  initDB();
+
+  await initDB();
   initScheduler(sock);
+
   sock.ev.on("creds.update", saveCreds);
   sock.ev.on("messages.upsert", async ({ messages }) => {
     const m = messages[0];
@@ -21,6 +23,7 @@ async function start() {
     const jid = m.key.remoteJid;
     const text = m.message.conversation || m.message.extendedTextMessage?.text;
     if (!text) return;
+
     if (await handleOnboarding(sock, jid, text)) return;
     await handleCommand(sock, jid, text);
   });
