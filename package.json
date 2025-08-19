@@ -1,0 +1,16 @@
+{
+  "name": "water-bot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.0",
+    "better-sqlite3": "^9.0.0",
+    "dayjs": "^1.11.9",
+    "node-cron": "^3.0.3",
+    "pino": "^8.15.0"
+  }
+}
