@@ -1,58 +1,84 @@
-import Database from "better-sqlite3";
-import path from "path";
+import sqlite3 from "sqlite3";
+import { open } from "sqlite";
 
-const DB_FILE = path.join(process.cwd(), "data", "waterbot.db");
-const db = new Database(DB_FILE);
+export const db = await open({
+  filename: "./data/waterbot.db",
+  driver: sqlite3.Database,
+});
 
-export function initDB() {
-  db.exec(`
+export async function initDB() {
+  await db.exec(`
     CREATE TABLE IF NOT EXISTS users (
-      jid TEXT PRIMARY KEY,
-      nama TEXT,
-      umur INTEGER,
-      tinggi_cm INTEGER,
-      berat_kg INTEGER,
-      target_ml INTEGER,
-      schedule_json TEXT,
-      reminders_active INTEGER DEFAULT 1,
-      tz TEXT DEFAULT 'Asia/Jakarta'
-    );
+      id TEXT PRIMARY KEY,
+      name TEXT,
+      age INTEGER,
+      height INTEGER,
+      weight INTEGER,
+      target INTEGER DEFAULT 2000
+    )
+  `);
 
+  await db.exec(`
     CREATE TABLE IF NOT EXISTS water_logs (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      jid TEXT,
-      ts TEXT,
-      volume_ml INTEGER,
-      source TEXT,
-      note TEXT
-    );
+      user_id TEXT,
+      amount INTEGER,
+      time TEXT
+    )
+  `);
 
+  await db.exec(`
     CREATE TABLE IF NOT EXISTS sweet_logs (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      jid TEXT,
-      ts TEXT,
-      nama TEXT,
-      volume_ml INTEGER
-    );
+      user_id TEXT,
+      drink TEXT,
+      time TEXT
+    )
   `);
 }
 
-export function getUser(jid) {
-  return db.prepare("SELECT * FROM users WHERE jid=?").get(jid);
+export async function getUser(id) {
+  return db.get("SELECT * FROM users WHERE id = ?", [id]);
 }
 
-export function saveUser(user) {
-  db.prepare(`INSERT OR REPLACE INTO users (jid, nama, umur, tinggi_cm, berat_kg, target_ml, schedule_json, reminders_active, tz)
-              VALUES (@jid,@nama,@umur,@tinggi_cm,@berat_kg,@target_ml,@schedule_json,@reminders_active,@tz)`)
-    .run(user);
+export async function saveUser(id, name, age, height, weight, target = 2000) {
+  await db.run(
+    `INSERT OR REPLACE INTO users (id, name, age, height, weight, target)
+     VALUES (?, ?, ?, ?, ?, ?)`,
+    [id, name, age, height, weight, target]
+  );
 }
 
-export function addWater(jid, volume, source, note="") {
-  db.prepare("INSERT INTO water_logs (jid, ts, volume_ml, source, note) VALUES (?,?,?,?,?)")
-    .run(jid, new Date().toISOString(), volume, source, note);
+export async function logWater(userId, amount) {
+  await db.run(
+    `INSERT INTO water_logs (user_id, amount, time)
+     VALUES (?, ?, datetime('now', 'localtime'))`,
+    [userId, amount]
+  );
 }
 
-export function addSweet(jid, nama, volume) {
-  db.prepare("INSERT INTO sweet_logs (jid, ts, nama, volume_ml) VALUES (?,?,?,?)")
-    .run(jid, new Date().toISOString(), nama, volume);
+export async function getDailyWater(userId) {
+  return db.all(
+    `SELECT * FROM water_logs 
+     WHERE user_id = ? 
+     AND date(time) = date('now', 'localtime')`,
+    [userId]
+  );
+}
+
+export async function logSweet(userId, drink) {
+  await db.run(
+    `INSERT INTO sweet_logs (user_id, drink, time)
+     VALUES (?, ?, datetime('now', 'localtime'))`,
+    [userId, drink]
+  );
+}
+
+export async function getMonthlySweet(userId) {
+  return db.all(
+    `SELECT * FROM sweet_logs 
+     WHERE user_id = ? 
+     AND strftime('%Y-%m', time) = strftime('%Y-%m', 'now', 'localtime')`,
+    [userId]
+  );
 }
