@@ -1,20 +1,19 @@
 import sqlite3 from "sqlite3";
 import { open } from "sqlite";
 
-export const db = await open({
-  filename: "./data/waterbot.db",
-  driver: sqlite3.Database,
-});
+let db;
 
 export async function initDB() {
+  db = await open({
+    filename: "./waterbot.db",
+    driver: sqlite3.Database
+  });
+
   await db.exec(`
     CREATE TABLE IF NOT EXISTS users (
-      id TEXT PRIMARY KEY,
+      user_id TEXT PRIMARY KEY,
       name TEXT,
-      age INTEGER,
-      height INTEGER,
-      weight INTEGER,
-      target INTEGER DEFAULT 2000
+      onboarding_done INTEGER DEFAULT 0
     )
   `);
 
@@ -23,44 +22,49 @@ export async function initDB() {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id TEXT,
       amount INTEGER,
-      time TEXT
-    )
-  `);
-
-  await db.exec(`
-    CREATE TABLE IF NOT EXISTS sweet_logs (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id TEXT,
-      drink TEXT,
-      time TEXT
+      source TEXT,
+      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
 }
 
-export async function getUser(id) {
-  return db.get("SELECT * FROM users WHERE id = ?", [id]);
-}
-
-export async function saveUser(id, name, age, height, weight, target = 2000) {
+export async function addUser(user_id, name) {
   await db.run(
-    `INSERT OR REPLACE INTO users (id, name, age, height, weight, target)
-     VALUES (?, ?, ?, ?, ?, ?)`,
-    [id, name, age, height, weight, target]
+    `INSERT OR IGNORE INTO users (user_id, name) VALUES (?, ?)`,
+    [user_id, name]
   );
 }
 
-export async function logWater(userId, amount) {
+export async function getUser(user_id) {
+  return db.get(`SELECT * FROM users WHERE user_id = ?`, [user_id]);
+}
+
+export async function getAllUsers() {
+  return db.all(`SELECT * FROM users WHERE onboarding_done = 1`);
+}
+
+export async function completeOnboarding(user_id) {
   await db.run(
-    `INSERT INTO water_logs (user_id, amount, time)
-     VALUES (?, ?, datetime('now', 'localtime'))`,
-    [userId, amount]
+    `UPDATE users SET onboarding_done = 1 WHERE user_id = ?`,
+    [user_id]
   );
 }
 
-export async function getDailyWater(userId) {
-  return db.all(
-    `SELECT * FROM water_logs 
+export async function addWater(user_id, amount, source) {
+  await db.run(
+    `INSERT INTO water_logs (user_id, amount, source) VALUES (?, ?, ?)`,
+    [user_id, amount, source]
+  );
+}
+
+export async function getDailyTotal(user_id) {
+  return db.get(
+    `SELECT SUM(amount) as total FROM water_logs 
      WHERE user_id = ? 
+     AND DATE(timestamp) = DATE('now', 'localtime')`,
+    [user_id]
+  );
+}     WHERE user_id = ? 
      AND date(time) = date('now', 'localtime')`,
     [userId]
   );
