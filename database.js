@@ -102,4 +102,25 @@ export async function getMonthlySweet(userId) {
      AND strftime('%Y-%m', time) = strftime('%Y-%m', 'now', 'localtime')`,
     [userId]
   );
+}     WHERE user_id = ? 
+     AND date(time) = date('now', 'localtime')`,
+    [userId]
+  );
+}
+
+export async function logSweet(userId, drink) {
+  await db.run(
+    `INSERT INTO sweet_logs (user_id, drink, time)
+     VALUES (?, ?, datetime('now', 'localtime'))`,
+    [userId, drink]
+  );
+}
+
+export async function getMonthlySweet(userId) {
+  return db.all(
+    `SELECT * FROM sweet_logs 
+     WHERE user_id = ? 
+     AND strftime('%Y-%m', time) = strftime('%Y-%m', 'now', 'localtime')`,
+    [userId]
+  );
 }
