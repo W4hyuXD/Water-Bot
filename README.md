@@ -26,7 +26,8 @@ Water-Bot/
 │── handlers/
 │    ├── commandHandler.js
 │    ├── profileHandler.js
-│── utils/ │    ├── time.js
+│── utils/
+│    ├── time.js
 │    └── messages.js
 └── data/ (database storage)
 ```
