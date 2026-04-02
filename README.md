@@ -1,4 +1,4 @@
-# 💧 WaterBot – WhatsApp Water Drinking Reminder
+# WaterBot – WhatsApp Water Drinking Reminder
 [![GitHub stars](https://img.shields.io/github/stars/W4hyuXD/water-bot?style=social)](https://github.com/W4hyuXD/Water-Bot/stargazers)
 ![Node.js](https://img.shields.io/badge/node-%3E%3D18-green)
 [![Support](https://img.shields.io/badge/Support-Coffe-Yellow)]()
@@ -6,16 +6,16 @@
 Bot ini dibuat menggunakan **Node.js**, **Baileys** (WhatsApp Web API), dan **SQLite** untuk database.
 
 ## ✨ Fitur
-- 📅 **Jadwal Minum Air Otomatis** (default: 06:00, 09:00, 13:00, 17:00, 21:00).
-- ✅ Reminder interaktif: Minum / Tunda / Lewati.
-- 📊 **Laporan harian & mingguan** (total air minum, minuman manis).
-- 🧑 **Profil pengguna** (Nama, Umur, TB, BB) → dipakai untuk target minum otomatis.
-- ☕ Catatan **minuman manis** (kopi, teh, jus, dll) → lengkap dengan history bulanan.
-- ⚙️ Semua bisa dikontrol lewat chat (command).
+- **Jadwal Minum Air Otomatis** (default: 06:00, 09:00, 13:00, 17:00, 21:00).
+- Reminder interaktif: Minum / Tunda / Lewati.
+- **Laporan harian & mingguan** (total air minum, minuman manis).
+- **Profil pengguna** (Nama, Umur, TB, BB) → dipakai untuk target minum otomatis.
+- Catatan **minuman manis** (kopi, teh, jus, dll) → lengkap dengan history bulanan.
+- Semua bisa dikontrol lewat chat (command).
 
 ---
 
-## 📂 Struktur Project
+## Struktur Project
 ```bash
 Water-Bot/
 │── package.json
@@ -32,7 +32,7 @@ Water-Bot/
 └── data/ (database storage)
 ```
 
-## 🚀 Instalasi
+## Instalasi
 1. Clone repo:
    ```bash
    git clone https://github.com/W4hyuXD/Water-Bot.git
@@ -42,7 +42,7 @@ Water-Bot/
 3. Jalankan bot: ```npm start```
 4. Scan QR Code di terminal menggunakan WhatsApp di HP kamu.
 
-## 💬 Command yang Tersedia
+## Command yang Tersedia
 ```
 🔹 Profil  
     Registrasi (pertama kali chat ke bot):  
@@ -67,24 +67,24 @@ Water-Bot/
    help → lihat daftar command  
 ```
 
-## 📊 Laporan Otomatis
+## Laporan Otomatis
 > Harian: Jam 22:00 bot mengirim ringkasan konsumsi air & minuman manis.    
 Mingguan: Hari Minggu malam, laporan rekap mingguan.   
 
-## 🔄 Flowchart Bot
+## Flowchart Bot
 ```flowchart TD
 A [Mulai Chat dengan Bot] --> B {Sudah Punya Profil?}
 B -- Tidak --> C [Tanya Profil: Nama, Umur, TB, BB]
 C --> D [Simpan ke Database]
 B -- Ya --> E [Menunggu Input User]
 
-E -->|Reminder Otomatis| F [💧 Ingatkan Minum Air]
+E -->|Reminder Otomatis| F [Ingatkan Minum Air]
 E -->|User Kirim Command| G {Jenis Command?}
 
-G -->|progress| H [📊 Kirim Progress Harian]
-G -->|jadwal / target| I [⚙️ Update Jadwal/Target]
-G -->|Gw pengen minum ...| J [☕ Catat Minuman Manis]
-G -->|help| K [📖 Tampilkan Bantuan]
+G -->|progress| H [Kirim Progress Harian]
+G -->|jadwal / target| I [Update Jadwal/Target]
+G -->|Gw pengen minum ...| J [Catat Minuman Manis]
+G -->|help| K [Tampilkan Bantuan]
 
 F --> L [User Pilih: Minum / Tunda / Skip]
 L --> M [Catat ke Database]
@@ -96,7 +96,7 @@ I --> P [Update DB User]
 N --> O
 ```
 
-## ⚙️ Technology
+## Technology
 >
 ```Node.js – runtime```   
 ```Baileys – WhatsApp Web API```   
@@ -104,17 +104,17 @@ N --> O
 ```dayjs – date & timezone```   
 ```node-cron – scheduler```   
 
-## 📌 Catatan
+## Catatan
 > Project ini hanya untuk penggunaan pribadi.    
 Jangan digunakan untuk spam atau automation yang melanggar kebijakan WhatsApp.     
 Database tersimpan lokal di data/waterbot.db.  
 
 ## 📸 Screenshots
 
-## 👨‍💻 Kontribusi
+## Kontribusi
 > Pull Request & saran selalu diterima.     
 Kalau ada bug / ide baru, silakan buat Issue.   
 
-## 📜 Lisensi
+## Lisensi
 ***MIT License © 2025***
 
